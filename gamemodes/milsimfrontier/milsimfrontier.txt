@@ -1,0 +1,8 @@
+"milsimfrontier"
+{
+	"base"		"sandbox"
+	"title"		"Milsim Frontier"
+	"category"	"roleplay"
+	"maps"		"^gm_|^rp_"
+	"menusystem"	"1"
+}

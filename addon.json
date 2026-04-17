@@ -1,0 +1,16 @@
+{
+  "title": "[MilsimFrontier] Gamemode + Content Preset",
+  "type": "gamemode",
+  "tags": [
+    "roleplay",
+    "realism",
+    "fun"
+  ],
+  "ignore": [
+    "*.psd",
+    "*.blend",
+    "*.cmd",
+    "*.bat",
+    ".git/*"
+  ]
+}
