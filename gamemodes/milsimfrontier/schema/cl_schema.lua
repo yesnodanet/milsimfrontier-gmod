@@ -1,0 +1,1 @@
+﻿-- Client schema bootstrap file.

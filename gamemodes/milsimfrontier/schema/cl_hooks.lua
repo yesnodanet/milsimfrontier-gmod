@@ -1,0 +1,1 @@
+﻿-- Client schema hooks are plugin-owned for now.
