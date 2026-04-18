@@ -1,8 +1,11 @@
-"milsimfrontier"
+﻿"milsimfrontier"
 {
-	"base"		"sandbox"
+	"base"		"clockwork"
 	"title"		"Milsim Frontier"
+	"author"		"yesnodanet + Codex"
+	"description"	"Clockwork schema for persistent faction survival with crafting and world PvE pressure."
 	"category"	"roleplay"
+	"version"	"3.0.0-cw"
 	"maps"		"^gm_|^rp_"
 	"menusystem"	"1"
 }
