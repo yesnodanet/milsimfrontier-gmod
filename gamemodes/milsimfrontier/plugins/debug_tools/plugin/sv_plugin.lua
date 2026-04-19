@@ -1,4 +1,4 @@
-﻿local function IsWeaponAvailable(className)
+local function IsWeaponAvailable(className)
     return weapons.GetStored(className) ~= nil
 end
 
@@ -17,6 +17,14 @@ local function RequireAdmin(player)
 
     Clockwork.player:Notify(player, "Admin permissions required.")
     return false
+end
+
+local function PrintToTarget(target, text)
+    if IsValid(target) then
+        target:PrintMessage(HUD_PRINTCONSOLE, text)
+    else
+        print(string.Trim(text))
+    end
 end
 
 function PLUGIN:ValidateSetup(target)
@@ -56,14 +64,28 @@ function PLUGIN:ValidateSetup(target)
         nodeCount, enemyCount = cwMFSWorld:GetDebugCounts()
     end
 
-    local message = string.format("[MilsimFrontier] Validation %s | Nodes: %d | Enemies: %d\n", ok and "passed" or "has errors", nodeCount, enemyCount)
-
-    if IsValid(target) then
-        target:PrintMessage(HUD_PRINTCONSOLE, message)
-    else
-        MFS.Log(string.Trim(message))
+    local structureCount, damagedStructureCount = 0, 0
+    if cwMFSBase and cwMFSBase.GetDebugCounts then
+        structureCount, damagedStructureCount = cwMFSBase:GetDebugCounts()
     end
 
+    local zoneCount, activeZoneCount = 0, 0
+    if cwMFSTradePosts and cwMFSTradePosts.GetDebugCounts then
+        zoneCount, activeZoneCount = cwMFSTradePosts:GetDebugCounts()
+    end
+
+    local message = string.format(
+        "[MilsimFrontier] Validation %s | Nodes: %d | Enemies: %d | Structures: %d (%d damaged) | Trade Zones: %d (%d active)\n",
+        ok and "passed" or "has errors",
+        nodeCount,
+        enemyCount,
+        structureCount,
+        damagedStructureCount,
+        zoneCount,
+        activeZoneCount
+    )
+
+    PrintToTarget(target, message)
     return ok
 end
 
@@ -83,10 +105,33 @@ concommand.Add("mfs_debug_materials", function(player, _, args)
     end
 
     local enable = (tonumber(args[1] or "1") or 1) > 0
-
     if IsValid(player) then
         player:SetNWBool("MFSDebugMaterials", enable)
         player:PrintMessage(HUD_PRINTCONSOLE, string.format("[MilsimFrontier] Material debug %s.\n", enable and "enabled" or "disabled"))
+    end
+end)
+
+concommand.Add("mfs_debug_zones", function(player, _, args)
+    if not RequireAdmin(player) then
+        return
+    end
+
+    local enable = (tonumber(args[1] or "1") or 1) > 0
+    if IsValid(player) then
+        player:SetNWBool("MFSDebugZones", enable)
+        player:PrintMessage(HUD_PRINTCONSOLE, string.format("[MilsimFrontier] Zone debug %s.\n", enable and "enabled" or "disabled"))
+    end
+end)
+
+concommand.Add("mfs_debug_build", function(player, _, args)
+    if not RequireAdmin(player) then
+        return
+    end
+
+    local enable = (tonumber(args[1] or "1") or 1) > 0
+    if IsValid(player) then
+        player:SetNWBool("MFSDebugBuild", enable)
+        player:PrintMessage(HUD_PRINTCONSOLE, string.format("[MilsimFrontier] Build debug %s.\n", enable and "enabled" or "disabled"))
     end
 end)
 
@@ -100,13 +145,27 @@ concommand.Add("mfs_debug_nodes", function(player)
         nodeCount, enemyCount = cwMFSWorld:GetDebugCounts()
     end
 
-    local msg = string.format("[MilsimFrontier] Nodes: %d | Enemies: %d\n", nodeCount, enemyCount)
-
-    if IsValid(player) then
-        player:PrintMessage(HUD_PRINTCONSOLE, msg)
-    else
-        MFS.Log(string.Trim(msg))
+    local structureCount, damagedStructureCount = 0, 0
+    if cwMFSBase and cwMFSBase.GetDebugCounts then
+        structureCount, damagedStructureCount = cwMFSBase:GetDebugCounts()
     end
+
+    local zoneCount, activeZoneCount = 0, 0
+    if cwMFSTradePosts and cwMFSTradePosts.GetDebugCounts then
+        zoneCount, activeZoneCount = cwMFSTradePosts:GetDebugCounts()
+    end
+
+    local msg = string.format(
+        "[MilsimFrontier] Nodes: %d | Enemies: %d | Structures: %d (%d damaged) | Trade Zones: %d (%d active)\n",
+        nodeCount,
+        enemyCount,
+        structureCount,
+        damagedStructureCount,
+        zoneCount,
+        activeZoneCount
+    )
+
+    PrintToTarget(player, msg)
 end)
 
 concommand.Add("mfs_spawn_material", function(player, _, args)

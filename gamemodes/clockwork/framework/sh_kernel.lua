@@ -807,8 +807,17 @@ local IdleActivityTranslate = {
 	@returns {Unknown}
 --]]
 function Clockwork:TranslateActivity(player, act)
+	if (!IsValid(player)) then
+		return act;
+	end;
+
 	local model = player:GetModel();
-	local bIsRaised = Clockwork.player:GetWeaponRaised(player, true);
+	local cwPlayerLibrary = Clockwork.player;
+	local bIsRaised = false;
+
+	if (cwPlayerLibrary and cwPlayerLibrary.GetWeaponRaised) then
+		bIsRaised = cwPlayerLibrary:GetWeaponRaised(player, true);
+	end;
 	
 	if (stringFind(model, "/player/")) then
 		local newAct = player:TranslateWeaponActivity(act);
@@ -831,12 +840,23 @@ end;
 	@returns {Unknown}
 --]]
 function Clockwork:CalcMainActivity(player, velocity)
+	if (!IsValid(player)) then
+		return ACT_HL2MP_IDLE, -1;
+	end;
+
+	velocity = velocity or Vector(0, 0, 0);
+
 	local model = player:GetModel();
 	
 	ANIMATION_PLAYER = player;
 	
 	local weapon = player:GetActiveWeapon();
-	local bIsRaised = Clockwork.player:GetWeaponRaised(player, true);
+	local cwPlayerLibrary = Clockwork.player;
+	local bIsRaised = false;
+
+	if (cwPlayerLibrary and cwPlayerLibrary.GetWeaponRaised) then
+		bIsRaised = cwPlayerLibrary:GetWeaponRaised(player, true);
+	end;
 	local animationAct = "stand";
 	local weaponHoldType = "pistol";
 	local forcedAnimation = player:GetForcedAnimation();

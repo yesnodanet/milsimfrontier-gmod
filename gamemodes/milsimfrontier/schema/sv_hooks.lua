@@ -11,6 +11,8 @@ local function BuildCVars()
     MFS.CVars.resourcesEnabled = MFS.CVars.resourcesEnabled or CreateConVar("mfs_resources_enabled", "1", FCVAR_FLAGS, "Enable world material spawners.")
     MFS.CVars.enemyEnabled = MFS.CVars.enemyEnabled or CreateConVar("mfs_enemies_enabled", "1", FCVAR_FLAGS, "Enable zombie spawners.")
     MFS.CVars.allyBuff = MFS.CVars.allyBuff or CreateConVar("mfs_ally_buff", "1", FCVAR_FLAGS, "Enable ally proximity resistance.")
+    MFS.CVars.baseBuilding = MFS.CVars.baseBuilding or CreateConVar("mfs_basebuilding_enabled", "1", FCVAR_FLAGS, "Enable MFS base building systems.")
+    MFS.CVars.tradePosts = MFS.CVars.tradePosts or CreateConVar("mfs_tradeposts_enabled", "1", FCVAR_FLAGS, "Enable dynamic trade post zones.")
     MFS.CVars.debug = MFS.CVars.debug or CreateConVar("mfs_debug", "0", {FCVAR_ARCHIVE}, "Verbose debug logs.")
 end
 

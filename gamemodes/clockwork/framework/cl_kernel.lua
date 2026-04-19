@@ -97,7 +97,13 @@ function hook.Call(name, gamemode, ...)
 		cwClient = Clockwork.Client;
 	end;
 	
-	local status, value = pcall(cwPlugin.RunHooks, cwPlugin, name, nil, ...);
+	local pluginLibrary = cwPlugin or Clockwork.plugin;
+	local status, value = true, nil;
+
+	if (pluginLibrary and pluginLibrary.RunHooks) then
+		cwPlugin = pluginLibrary;
+		status, value = pcall(pluginLibrary.RunHooks, pluginLibrary, name, nil, ...);
+	end;
 	
 	if (!status) then
 		MsgC(Color(255, 100, 0, 255), "[Clockwork] The '"..name.."' hook failed to run.\n"..value.."\n"..value.."\n");

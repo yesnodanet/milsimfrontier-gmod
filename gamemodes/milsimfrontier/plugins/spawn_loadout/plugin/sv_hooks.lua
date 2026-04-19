@@ -224,40 +224,6 @@ function PLUGIN:RelocateOutcastSpawn(player)
     return false
 end
 
-function PLUGIN:UpdateAllyBuff()
-    if MFS.CVars and MFS.CVars.allyBuff and not MFS.CVars.allyBuff:GetBool() then
-        for _, target in ipairs(player.GetAll()) do
-            target:SetNWFloat("MFSAllyResistance", 0)
-        end
-        return
-    end
-
-    local radiusSqr = MFS.AllyBuff.radius * MFS.AllyBuff.radius
-
-    for _, subject in ipairs(player.GetAll()) do
-        if IsValid(subject) and subject:Alive() then
-            local factionName = subject:GetFaction()
-            if not factionName or factionName == "Outcasts" then
-                subject:SetNWFloat("MFSAllyResistance", 0)
-            else
-                local allies = 0
-                local origin = subject:GetPos()
-
-                for _, other in ipairs(player.GetAll()) do
-                    if other ~= subject and IsValid(other) and other:Alive() then
-                        if other:GetFaction() == factionName and origin:DistToSqr(other:GetPos()) <= radiusSqr then
-                            allies = allies + 1
-                        end
-                    end
-                end
-
-                local resistance = math.min(MFS.AllyBuff.maxResistance, allies * MFS.AllyBuff.resistancePerAlly)
-                subject:SetNWFloat("MFSAllyResistance", resistance)
-            end
-        end
-    end
-end
-
 function PLUGIN:SetPlayerClassByName(player, requestedClass)
     local classTable = FindClassByName(requestedClass)
     if not classTable then
@@ -272,14 +238,6 @@ function PLUGIN:SetPlayerClassByName(player, requestedClass)
     player:SetCharacterData("Class", classTable.name, true)
     Clockwork.class:Set(player, classTable.index, true)
     return true, classTable.name
-end
-
-function PLUGIN:ClockworkInitialized()
-    timer.Create("MFS.AllyBuffTick", 1, 0, function()
-        if cwMFSLoadout then
-            cwMFSLoadout:UpdateAllyBuff()
-        end
-    end)
 end
 
 function PLUGIN:PlayerCharacterInitialized(player)
@@ -313,11 +271,4 @@ function PLUGIN:PostPlayerSpawn(player)
             cwMFSMaterials:SyncMaterialInventory(player)
         end
     end)
-end
-
-function PLUGIN:PlayerTakeDamage(player, inflictor, attacker, hitGroup, damageInfo)
-    local resistance = math.Clamp(player:GetNWFloat("MFSAllyResistance", 0), 0, 0.9)
-    if resistance > 0 then
-        damageInfo:ScaleDamage(1 - resistance)
-    end
 end

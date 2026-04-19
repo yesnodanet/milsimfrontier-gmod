@@ -1,44 +1,32 @@
-﻿# Milsim Frontier (Clockwork Migration)
+# Milsim Frontier (CW Rebuild v1)
 
-This repository now contains a full **Clockwork-based** schema implementation.
+Clockwork-first rebuild of the Milsim Frontier mode.
 
 ## Structure
 
-- **Framework (vendored):** `gamemodes/clockwork`
-- **Schema gamemode:** `gamemodes/milsimfrontier`
-- **Schema root:** `gamemodes/milsimfrontier/schema`
-- **Gameplay plugins:** `gamemodes/milsimfrontier/plugins/*`
-- **Legacy standalone backup (not used at runtime):** `gamemodes/milsimfrontier/legacy_standalone`
+- Framework (vendored): `gamemodes/clockwork`
+- Schema gamemode: `gamemodes/milsimfrontier`
+- Schema root: `gamemodes/milsimfrontier/schema`
+- Gameplay plugins: `gamemodes/milsimfrontier/plugins/*`
 
 ## Clean Wipe Notice
 
-This migration is a **clean wipe** for v1 Clockwork rollout.
+This release is a clean wipe for the Clockwork schema rollout.
 
-- Persistence source of truth is now Clockwork character/inventory data (SQLite).
-- Legacy PData keys from standalone mode are deprecated and ignored.
+- Persistence source of truth: Clockwork + SQLite.
+- Legacy standalone PData flows are not used.
 
 ## Included Plugins
 
-- `factions_classes`
-  - Rebels / Alliance / Outcasts factions
-  - Alliance class split: Fighter / Engineer / Collector
-- `spawn_loadout`
-  - Role loadouts on spawn
-  - Outcasts isolated spawn logic
-  - Outcasts baseline is pistol-only (`tacrp_p2000`)
-  - Ally proximity resistance buff
-- `materials_inventory`
-  - Materials as Clockwork items (persistent)
-  - Character-data snapshot sync
-  - Client material HUD
-- `crafting`
-  - Clockwork blueprint crafting for weapons + medkit
-  - Weapon unlock persistence per character
-- `world_spawners`
-  - Resource node spawning
-  - Zombie spawning and material drops on kill
-- `debug_tools`
-  - Validation, node counters, debug overlays, compatibility wrappers
+- `factions_classes`: Rebels / Alliance / Outcasts factions and Alliance classes
+- `spawn_loadout`: role loadouts and isolated outcast spawn
+- `ally_synergy`: proximity resistance buff for non-outcast allies
+- `materials_inventory`: persistent material items + sync HUD data
+- `crafting`: CW blueprints for weapon and medkit crafting
+- `world_spawners`: resource nodes, zombies and NPC material drops
+- `base_building`: build/upgrade/repair/remove persistent structures
+- `trade_posts`: static trade zones with timed hard safe-zone windows
+- `debug_tools`: validation commands, counters and debug overlays
 
 ## Workshop Dependencies
 
@@ -48,45 +36,46 @@ This migration is a **clean wipe** for v1 Clockwork rollout.
 - Rebel models `Tactical rebel playermodels`: `1594326092`
 - Outcast models `Stalker playermodels (factions)`: `355101935`
 
-These are auto-registered with `resource.AddWorkshop`.
+Dependencies are auto-registered with `resource.AddWorkshop`.
 
 ## Start Server
-
-Use:
 
 ```bash
 +gamemode milsimfrontier +map gm_fork
 ```
 
-## Behavior Changes
+## Gameplay Contracts
 
-- Initial faction selection is now part of **Clockwork character creation**.
-- Class choice is also CW-native (Alliance classes shown during character creation).
-- Old custom faction popup flow is removed.
+- Faction and class selection go through Clockwork character creation.
+- Outcasts start pistol-only (`tacrp_p2000`) and use solo spawn relocation.
+- Materials, crafted unlocks and base structures are persisted by CW schema data.
+- Trade zones are static per map and become hard safe-zones when active.
 
-## Compatibility Commands (`mfs_*`)
+## Commands (`mfs_*`)
 
 ### Player
 
-- `mfs_choose_faction` - open CW character menu (faction flow is CW-native)
-- `mfs_open_craft` - crafting helper hint
-- `mfs_recipes` - list recipe IDs
-- `mfs_craft <recipeID>` - craft a recipe
-- `mfs_join_class <class>` - switch class inside current faction
+- `mfs_choose_faction`
+- `mfs_open_craft`
+- `mfs_recipes`
+- `mfs_craft <recipeID>`
+- `mfs_join_class <class>`
+- `mfs_build_list`
+- `mfs_build_place <structureID>`
+- `mfs_build_upgrade`
+- `mfs_build_repair`
+- `mfs_build_remove`
 
 ### Admin
 
-- `mfs_validate` - validate map, weapons, navmesh, counters
-- `mfs_debug_materials 1/0` - toggle material node overlay
-- `mfs_debug_nodes` - print node/enemy counters
-- `mfs_spawn_material [material] [amount]` - spawn resource node
-- `mfs_spawn_enemy [npc_class]` - spawn zombie/NPC
-
-### Chat Shortcuts
-
-- `!faction`
-- `!craft`
-- `!matdebug` (admin)
+- `mfs_validate`
+- `mfs_debug_materials 1/0`
+- `mfs_debug_zones 1/0`
+- `mfs_debug_build 1/0`
+- `mfs_debug_nodes`
+- `mfs_spawn_material [material] [amount]`
+- `mfs_spawn_enemy [npc_class]`
+- `mfs_trade_status`
 
 ## Main CVars
 
@@ -97,4 +86,6 @@ Use:
 - `mfs_resources_enabled 1`
 - `mfs_enemies_enabled 1`
 - `mfs_ally_buff 1`
+- `mfs_basebuilding_enabled 1`
+- `mfs_tradeposts_enabled 1`
 - `mfs_debug 0`

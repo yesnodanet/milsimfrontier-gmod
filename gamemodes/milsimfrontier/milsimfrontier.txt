@@ -1,4 +1,4 @@
-﻿"milsimfrontier"
+"milsimfrontier"
 {
 	"base"		"clockwork"
 	"title"		"Milsim Frontier"
@@ -6,6 +6,6 @@
 	"description"	"Clockwork schema for persistent faction survival with crafting and world PvE pressure."
 	"category"	"roleplay"
 	"version"	"3.0.0-cw"
-	"maps"		"^gm_|^rp_"
+	"maps"		".*"
 	"menusystem"	"1"
 }

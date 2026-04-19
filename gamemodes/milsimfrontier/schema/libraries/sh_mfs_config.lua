@@ -115,6 +115,72 @@ cfg.AllyBuff = {
     maxResistance = 0.20
 }
 
+cfg.BaseBuilding = {
+    enabled = true,
+    maxStructuresPerPlayer = 45,
+    maxStructuresGlobal = 300,
+    placementDistance = 240,
+    minSpacing = 70,
+    saveInterval = 45,
+    repairChunk = 120,
+    structureClass = "mf_build_structure",
+    types = {
+        barricade = {
+            name = "Barricade",
+            model = "models/props_debris/wood_board04a.mdl",
+            maxLevel = 3,
+            baseHealth = 350,
+            healthPerLevel = 200,
+            buildCost = {scrap = 6, cloth = 2},
+            upgradeCosts = {
+                [2] = {scrap = 5, cloth = 2},
+                [3] = {scrap = 8, electronics = 2}
+            },
+            repairCost = {scrap = 1}
+        },
+        workbench = {
+            name = "Workbench",
+            model = "models/props_c17/FurnitureTable001a.mdl",
+            maxLevel = 3,
+            baseHealth = 420,
+            healthPerLevel = 240,
+            buildCost = {scrap = 9, electronics = 3, cloth = 1},
+            upgradeCosts = {
+                [2] = {scrap = 6, electronics = 2},
+                [3] = {scrap = 9, electronics = 4, chemicals = 1}
+            },
+            repairCost = {scrap = 1, electronics = 1}
+        },
+        storage = {
+            name = "Field Storage",
+            model = "models/props_junk/wood_crate001a.mdl",
+            maxLevel = 3,
+            baseHealth = 500,
+            healthPerLevel = 260,
+            buildCost = {scrap = 8, cloth = 3},
+            upgradeCosts = {
+                [2] = {scrap = 6, cloth = 3},
+                [3] = {scrap = 9, cloth = 5, electronics = 2}
+            },
+            repairCost = {scrap = 2, cloth = 1}
+        }
+    }
+}
+
+cfg.TradePosts = {
+    enabled = true,
+    tickInterval = 1,
+    activeDuration = 320,
+    cooldownDuration = 720,
+    mapZones = {
+        gm_fork = {
+            {id = "fork_market_north", position = Vector(1210, -2500, 120), radius = 420, activeOffset = 30},
+            {id = "fork_market_south", position = Vector(-3160, 820, 116), radius = 420, activeOffset = 180},
+            {id = "fork_market_valley", position = Vector(3380, 4550, 130), radius = 420, activeOffset = 330}
+        }
+    }
+}
+
 cfg.NodeModels = {
     "models/props_junk/wood_crate001a.mdl",
     "models/props_junk/garbage_metalcan001a.mdl",
@@ -247,7 +313,7 @@ cfg.Loadouts = {
         },
         utility = {},
         health = 100,
-        armor = 8
+        armor = 0
     }
 }
 
@@ -296,6 +362,23 @@ function MFS.GetRecipeByBlueprintID(blueprintID)
     end
 
     return nil, nil
+end
+
+function MFS.GetStructureDef(structureID)
+    if not structureID then
+        return nil
+    end
+
+    return MFS.BaseBuilding.types[string.lower(structureID)]
+end
+
+function MFS.GetTradeZonesForMap(mapName)
+    local zones = MFS.TradePosts.mapZones[mapName or game.GetMap()]
+    if not zones then
+        return {}
+    end
+
+    return zones
 end
 
 function MFS.Log(text, ...)

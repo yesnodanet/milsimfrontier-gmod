@@ -128,7 +128,13 @@ function hook.Call(name, gamemode, ...)
 		end;
 	end;
 
-	local status, value = pcall(cwPlugin.RunHooks, cwPlugin, name, nil, ...);
+	local pluginLibrary = cwPlugin or Clockwork.plugin;
+	local status, value = true, nil;
+
+	if (pluginLibrary and pluginLibrary.RunHooks) then
+		cwPlugin = pluginLibrary;
+		status, value = pcall(pluginLibrary.RunHooks, pluginLibrary, name, nil, ...);
+	end;
 
 	if (!status) then
 		if (!Clockwork.Unauthorized) then
