@@ -1,4 +1,4 @@
-﻿"milsimfrontier"
+"milsimfrontier"
 {
 	"base"		"clockwork"
 	"title"		"Milsim Frontier"
