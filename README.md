@@ -10,6 +10,9 @@ This repository now contains a full **Clockwork-based** schema implementation.
 - **Gameplay plugins:** `gamemodes/milsimfrontier/plugins/*`
 - **Legacy standalone backup (not used at runtime):** `gamemodes/milsimfrontier/legacy_standalone`
 
+> Note: `gamemodes/milsimfrontier/gamemode` contains a marker file on purpose.
+> Do not delete it, or the mode can disappear from the in-game gamemode list after clone/update.
+
 ## Clean Wipe Notice
 
 This migration is a **clean wipe** for v1 Clockwork rollout.
