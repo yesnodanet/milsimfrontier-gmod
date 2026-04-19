@@ -55,11 +55,9 @@ Dependencies are auto-registered with `resource.AddWorkshop`.
 
 ### Player
 
-- `mfs_choose_faction`
 - `mfs_open_craft`
 - `mfs_recipes`
 - `mfs_craft <recipeID>`
-- `mfs_join_class <class>`
 - `mfs_build_list`
 - `mfs_build_place <structureID>`
 - `mfs_build_upgrade`

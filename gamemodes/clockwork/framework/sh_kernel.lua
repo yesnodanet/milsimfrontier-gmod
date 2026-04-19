@@ -859,7 +859,11 @@ function Clockwork:CalcMainActivity(player, velocity)
 	end;
 	local animationAct = "stand";
 	local weaponHoldType = "pistol";
-	local forcedAnimation = player:GetForcedAnimation();
+	local forcedAnimation = nil;
+
+	if (player.GetForcedAnimation) then
+		forcedAnimation = player:GetForcedAnimation();
+	end;
 
 	if (IsValid(weapon)) then
 		weaponHoldType = Clockwork.animation:GetWeaponHoldType(player, weapon);
@@ -884,13 +888,16 @@ function Clockwork:CalcMainActivity(player, velocity)
 	and !self:HandlePlayerVaulting(player, velocity)) then
 		local velLength = velocity:Length2D();
 				
-		if (player:IsRunning() or player:IsJogging()) then
+		local isRunning = player.IsRunning and player:IsRunning() or false;
+		local isJogging = player.IsJogging and player:IsJogging() or false;
+
+		if (isRunning or isJogging) then
 			player.CalcIdeal = Clockwork.animation:GetForModel(model, animationAct.."_run");
 		elseif (velLength > 0.5) then
 			player.CalcIdeal = Clockwork.animation:GetForModel(model, animationAct.."_walk");
 		end;
 		
-		if (CLIENT) then
+		if (CLIENT and player.SetIK) then
 			player:SetIK(false);
 		end;
 	end;

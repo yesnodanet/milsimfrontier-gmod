@@ -213,47 +213,8 @@ concommand.Add("mfs_spawn_enemy", function(player, _, args)
     end
 end)
 
-concommand.Add("mfs_choose_faction", function(player)
-    if not IsValid(player) then
-        return
-    end
-
-    Clockwork.player:SetCharacterMenuOpen(player, false)
-    Clockwork.player:Notify(player, "Faction selection now uses Clockwork character creation.")
-end)
-
-concommand.Add("mfs_join_class", function(player, _, args)
-    if not IsValid(player) then
-        return
-    end
-
-    local className = args[1]
-    if not className then
-        player:PrintMessage(HUD_PRINTCONSOLE, "[MilsimFrontier] Usage: mfs_join_class <class>\n")
-        return
-    end
-
-    if not (cwMFSLoadout and cwMFSLoadout.SetPlayerClassByName) then
-        Clockwork.player:Notify(player, "Loadout plugin is not available.")
-        return
-    end
-
-    local ok, result = cwMFSLoadout:SetPlayerClassByName(player, className)
-    if ok then
-        Clockwork.player:Notify(player, string.format("Class switched to %s.", result))
-        player:Spawn()
-    else
-        Clockwork.player:Notify(player, result or "Failed to switch class.")
-    end
-end)
-
 hook.Add("PlayerSay", "MFS.ChatShortcuts", function(player, text)
     local cleaned = string.Trim(string.lower(text or ""))
-
-    if cleaned == "!faction" then
-        player:ConCommand("mfs_choose_faction")
-        return ""
-    end
 
     if cleaned == "!craft" then
         player:ConCommand("mfs_open_craft")
