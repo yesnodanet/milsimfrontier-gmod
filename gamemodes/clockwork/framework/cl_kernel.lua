@@ -69,6 +69,39 @@ local cwOption = Clockwork.option;
 local cwConfig = Clockwork.config;
 local cwKernel = Clockwork.kernel;
 local cwPlugin = Clockwork.plugin;
+local cwPluginProxy = {};
+
+function cwPluginProxy:RunHooks(...)
+	local plugin = Clockwork.plugin;
+	if (plugin and plugin.RunHooks) then
+		return plugin:RunHooks(...);
+	end;
+end;
+
+function cwPluginProxy:Call(...)
+	local plugin = Clockwork.plugin;
+	if (plugin and plugin.Call) then
+		return plugin:Call(...);
+	end;
+end;
+
+function cwPluginProxy:CheckMismatches()
+	local plugin = Clockwork.plugin;
+	if (plugin and plugin.CheckMismatches) then
+		return plugin:CheckMismatches();
+	end;
+end;
+
+function cwPluginProxy:ClearHookCache()
+	local plugin = Clockwork.plugin;
+	if (plugin and plugin.ClearHookCache) then
+		return plugin:ClearHookCache();
+	end;
+end;
+
+if (!cwPlugin) then
+	cwPlugin = cwPluginProxy;
+end;
 local cwTheme = Clockwork.theme;
 local cwEvent = Clockwork.event;
 local cwPly = Clockwork.player;
@@ -99,7 +132,7 @@ function hook.Call(name, gamemode, ...)
 	
 	-- Clockwork.plugin can be nil during very early client boot/autorefresh.
 	-- Resolve it lazily and fall back to default hook dispatch until ready.
-	cwPlugin = Clockwork.plugin or cwPlugin;
+	cwPlugin = Clockwork.plugin or cwPlugin or cwPluginProxy;
 	
 	local status, value = true, nil;
 	if (cwPlugin and cwPlugin.RunHooks) then
