@@ -847,6 +847,7 @@ function Clockwork:CalcMainActivity(player, velocity)
 	velocity = velocity or Vector(0, 0, 0);
 
 	local model = player:GetModel();
+	local cwAnimation = Clockwork.animation;
 	
 	ANIMATION_PLAYER = player;
 	
@@ -865,8 +866,8 @@ function Clockwork:CalcMainActivity(player, velocity)
 		forcedAnimation = player:GetForcedAnimation();
 	end;
 
-	if (IsValid(weapon)) then
-		weaponHoldType = Clockwork.animation:GetWeaponHoldType(player, weapon);
+	if (IsValid(weapon) and cwAnimation and cwAnimation.GetWeaponHoldType) then
+		weaponHoldType = cwAnimation:GetWeaponHoldType(player, weapon);
 	
 		if (weaponHoldType) then
 			animationAct = animationAct.."_"..weaponHoldType;
@@ -877,10 +878,15 @@ function Clockwork:CalcMainActivity(player, velocity)
 		animationAct = animationAct.."_aim";
 	end;
 	
-	player.CalcIdeal = Clockwork.animation:GetForModel(model, animationAct.."_idle");
+	if (cwAnimation and cwAnimation.GetForModel) then
+		player.CalcIdeal = cwAnimation:GetForModel(model, animationAct.."_idle");
+	else
+		player.CalcIdeal = ACT_HL2MP_IDLE;
+	end;
 	player.CalcSeqOverride = -1;
 	
-	if (!self:HandlePlayerDriving(player)
+	if (cwAnimation
+	and !self:HandlePlayerDriving(player)
 	and !self:HandlePlayerJumping(player)
 	and !self:HandlePlayerDucking(player, velocity)
 	and !self:HandlePlayerSwimming(player)
@@ -892,9 +898,17 @@ function Clockwork:CalcMainActivity(player, velocity)
 		local isJogging = player.IsJogging and player:IsJogging() or false;
 
 		if (isRunning or isJogging) then
-			player.CalcIdeal = Clockwork.animation:GetForModel(model, animationAct.."_run");
+			if (cwAnimation and cwAnimation.GetForModel) then
+				player.CalcIdeal = cwAnimation:GetForModel(model, animationAct.."_run");
+			else
+				player.CalcIdeal = ACT_HL2MP_RUN;
+			end;
 		elseif (velLength > 0.5) then
-			player.CalcIdeal = Clockwork.animation:GetForModel(model, animationAct.."_walk");
+			if (cwAnimation and cwAnimation.GetForModel) then
+				player.CalcIdeal = cwAnimation:GetForModel(model, animationAct.."_walk");
+			else
+				player.CalcIdeal = ACT_HL2MP_WALK;
+			end;
 		end;
 		
 		if (CLIENT and player.SetIK) then
@@ -902,8 +916,10 @@ function Clockwork:CalcMainActivity(player, velocity)
 		end;
 	end;
 	
-	if (forcedAnimation) then
-		player.CalcSeqOverride = forcedAnimation.animation;
+	if (type(forcedAnimation) == "table") then
+		if (forcedAnimation.animation) then
+			player.CalcSeqOverride = forcedAnimation.animation;
+		end;
 		
 		if (forcedAnimation.OnAnimate) then
 			forcedAnimation.OnAnimate(player);
@@ -939,17 +955,27 @@ end;
 	@returns {Unknown}
 --]]
 function Clockwork:DoAnimationEvent(player, event, data)
+	if (!IsValid(player)) then
+		return ACT_INVALID;
+	end;
+
 	local model = player:GetModel();
+	local cwAnimation = Clockwork.animation;
 	
 	if (stringFind(model, "/player/")) then
+		return self.BaseClass:DoAnimationEvent(player, event, data);
+	end;
+
+	if (!cwAnimation) then
 		return self.BaseClass:DoAnimationEvent(player, event, data);
 	end;
 	
 	local weapon = player:GetActiveWeapon();
 	local animationAct = "pistol";
+	local weaponHoldType;
 	
-	if (IsValid(weapon)) then
-		weaponHoldType = Clockwork.animation:GetWeaponHoldType(player, weapon);
+	if (IsValid(weapon) and cwAnimation and cwAnimation.GetWeaponHoldType) then
+		weaponHoldType = cwAnimation:GetWeaponHoldType(player, weapon);
 	
 		if (weaponHoldType) then
 			animationAct = weaponHoldType;
@@ -957,7 +983,11 @@ function Clockwork:DoAnimationEvent(player, event, data)
 	end;
 	
 	if (event == PLAYERANIMEVENT_ATTACK_PRIMARY) then
-		local gestureSequence = Clockwork.animation:GetForModel(model, animationAct.."_attack");
+		local gestureSequence;
+		
+		if (cwAnimation and cwAnimation.GetForModel) then
+			gestureSequence = cwAnimation:GetForModel(model, animationAct.."_attack");
+		end;
 		
 		if (gestureSequence) then
 			if (player:Crouching()) then
@@ -969,7 +999,11 @@ function Clockwork:DoAnimationEvent(player, event, data)
 		
 		return ACT_VM_PRIMARYATTACK;
 	elseif (event == PLAYERANIMEVENT_RELOAD) then
-		local gestureSequence = Clockwork.animation:GetForModel(model, animationAct.."_reload");
+		local gestureSequence;
+		
+		if (cwAnimation and cwAnimation.GetForModel) then
+			gestureSequence = cwAnimation:GetForModel(model, animationAct.."_reload");
+		end;
 
 		if (gestureSequence) then
 			if (player:Crouching()) then
